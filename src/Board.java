@@ -1,5 +1,3 @@
-package src;
-
 import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.Color;
@@ -15,13 +13,13 @@ import javax.swing.*; //Get all of Swing
 
 public class Board extends JFrame implements ActionListener {
 	
-	public class gridSquare extends JButton implements ActionListener{
+	public class GridSquare extends JButton implements ActionListener{
 		
 		protected boolean active = false;
 		protected int x; // x-coordinate
 		protected int y; // y-coordinate
 		
-		public gridSquare(int newRow, int newCol) {
+		public GridSquare(int newRow, int newCol) {
 			
 			x = newRow;
 			y = newCol;
@@ -30,7 +28,7 @@ public class Board extends JFrame implements ActionListener {
 
 	            @Override
 	            public void mouseEntered(MouseEvent me) {
-	            	Board.this.hover(gridSquare.this);
+	            	Board.this.hover(GridSquare.this);
 	            }
 	            
 	            public void mouseExited(MouseEvent me) {
@@ -41,7 +39,7 @@ public class Board extends JFrame implements ActionListener {
 		}
 		
 		public void actionPerformed(ActionEvent e) {
-			Board.this.placePiece(gridSquare.this);
+			Board.this.placePiece(GridSquare.this);
 		}
 		
 		public void setActive() {
@@ -59,8 +57,8 @@ public class Board extends JFrame implements ActionListener {
 		}
 		
 		public void setUnHover() {
-		    if(!this.active){
-			this.setBackground(null);
+			if (!this.active) {
+				this.setBackground(null);
 			}
 		}
 		
@@ -68,27 +66,27 @@ public class Board extends JFrame implements ActionListener {
 	
 	private JPanel gridPanel = new JPanel();
 	
-	private gridSquare [][] boardGrid;
+	private GridSquare [][] boardGrid;
 	private Piece selectedPiece;
 	
-	private Queue<gridSquare> hoverQueue;
+	private Queue<GridSquare> hoverQueue;
 	
 	private int row = 20;
 	private int col = 20;
 	
 	public Board() {
 		// 2D array of board pieces	 
-		boardGrid = new gridSquare[row][col];
+		boardGrid = new GridSquare[row][col];
+		hoverQueue = new LinkedList<GridSquare>();
 		
 		selectedPiece = new Piece(19, "#2874A6");
-		hoverQueue = new LinkedList<gridSquare>();
 				
 		for (int i = 0; i < row; i++) { 
-		    for (int j = 0; j < col; j++) { 
-            	       boardGrid[i][j] = new gridSquare(i, j);
-            	       boardGrid[i][j].addActionListener(this);
-            	       gridPanel.add(boardGrid[i][j]);          	                
-            	   }   
+			for (int j = 0; j < col; j++) { 
+            	boardGrid[i][j] = new GridSquare(i, j);
+            	boardGrid[i][j].addActionListener(this);
+            	gridPanel.add(boardGrid[i][j]);          	                
+	        }   
 		} 		 
 	}
 	
@@ -100,12 +98,12 @@ public class Board extends JFrame implements ActionListener {
 		 setVisible(true);			 
 	}
 	
-	public void hover(gridSquare origin) {
+	public void hover(GridSquare origin) {
 		int xCoor = origin.x;
 		int yCoor = origin.y;
 		for(Point c : selectedPiece.piecePath()) {
 			if(xCoor+c.getX() >= 0 && xCoor+c.getX() < 20 && yCoor+c.getY() >= 0 && yCoor+c.getY() < 20) {
-				gridSquare square = boardGrid[(int)c.getX()+xCoor][(int)c.getY()+yCoor];
+				GridSquare square = boardGrid[(int)c.getX()+xCoor][(int)c.getY()+yCoor];
 				if(!square.active) {
 					hoverQueue.add(square);
 					square.setHover();		
@@ -116,7 +114,7 @@ public class Board extends JFrame implements ActionListener {
 	
 	public void unHover() {
 		while(hoverQueue.size() >0) {
-			gridSquare square = hoverQueue.remove();
+			GridSquare square = hoverQueue.remove();
 			square.setUnHover();
 		}
 	}
@@ -125,7 +123,7 @@ public class Board extends JFrame implements ActionListener {
 		selectedPiece = p;
 	}
 	
-	public void placePiece(gridSquare origin) {
+	public void placePiece(GridSquare origin) {
 		if(legalMove(selectedPiece, origin)) {	
 			for(Point c : selectedPiece.piecePath()) {
 				boardGrid[origin.x + (int)c.getX()][origin.y + (int)c.getY()].setActive();
@@ -138,7 +136,7 @@ public class Board extends JFrame implements ActionListener {
 	// STILL NEED TO ADD COLOUR CHECK
 	// STILL NEED TO CHECK OPENING MOVE -- boardGrid[0][0] boardGrid[19][0] boardGrid[19][19] boardGrid[0][19]
 	// Need error checking for out of bounds
-	public boolean legalMove(Piece p, gridSquare origin) {
+	public boolean legalMove(Piece p, GridSquare origin) {
 		boolean valid = true;
 		boolean allChecked = false;
 		boolean toCorner = false;
@@ -158,10 +156,10 @@ public class Board extends JFrame implements ActionListener {
 			}
 			allChecked = true;
 		}
-		return (valid);// && toCorner);
+		return (valid); // && toCorner);
 	}
 	
-	public gridSquare[][] getBoard() {
+	public GridSquare[][] getBoard() {
 		return boardGrid;
 	}
 	
