@@ -1,3 +1,5 @@
+package src;
+
 import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.Color;
@@ -135,9 +137,10 @@ public class Board extends JFrame implements ActionListener {
 	// Need error checking for out of bounds
 	public boolean legalMove(Piece p, gridSquare origin) {
 		boolean valid = true;
+		boolean allChecked = false;
 		boolean toCorner = false;
 		// Check conditions for each square in Piece
-		while(valid) {
+		while(valid && !allChecked) {
 			for(Point c : p.piecePath()) {
 				// Check if there are any adjacent active squares - Not valid if there are
 				if(boardGrid[(int) (origin.x+c.getX()+1)][(int) (origin.y+c.getY())].active) {valid = false;}
@@ -150,8 +153,9 @@ public class Board extends JFrame implements ActionListener {
 				//else if(boardGrid[(int) (origin.x+c.getX()-1)][(int) (origin.y+c.getY()-1)].active) {toCorner = true;}
 				//else if(boardGrid[(int) (origin.x+c.getX()-1)][(int) (origin.y+c.getY()+1)].active) {toCorner = true;}
 			}
+			allChecked = true;
 		}
-		return (valid && toCorner);
+		return (valid);// && toCorner);
 	}
 	
 	public gridSquare[][] getBoard() {
