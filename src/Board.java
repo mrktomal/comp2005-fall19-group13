@@ -30,11 +30,11 @@ public class Board extends JFrame implements ActionListener {
 
 	            @Override
 	            public void mouseEntered(MouseEvent me) {
-	            	//Board.this.hover(gridSquare.this);
+	            	Board.this.hover(gridSquare.this);
 	            }
 	            
 	            public void mouseExited(MouseEvent me) {
-	            	//Board.this.unHover();
+	            	Board.this.unHover();
 	            }
 	            
 	        });
@@ -59,7 +59,9 @@ public class Board extends JFrame implements ActionListener {
 		}
 		
 		public void setUnHover() {
-			this.setBackground(null);		
+		    if(!this.active){
+			this.setBackground(null);
+			}
 		}
 		
 	}
@@ -79,13 +81,14 @@ public class Board extends JFrame implements ActionListener {
 		boardGrid = new gridSquare[row][col];
 		
 		selectedPiece = new Piece(19, "#2874A6");
+		hoverQueue = new LinkedList<gridSquare>();
 				
 		for (int i = 0; i < row; i++) { 
-			for (int j = 0; j < col; j++) { 
-            	boardGrid[i][j] = new gridSquare(i, j);
-            	boardGrid[i][j].addActionListener(this);
-            	gridPanel.add(boardGrid[i][j]);          	                
-	        }   
+		    for (int j = 0; j < col; j++) { 
+            	       boardGrid[i][j] = new gridSquare(i, j);
+            	       boardGrid[i][j].addActionListener(this);
+            	       gridPanel.add(boardGrid[i][j]);          	                
+            	   }   
 		} 		 
 	}
 	
