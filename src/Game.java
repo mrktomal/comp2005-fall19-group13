@@ -10,17 +10,17 @@ public class Game {
 	public boolean playing;
 	
 	//Colours: Color.decode(String)
-	//Blue: #167BFF
-	//Green: #25BE00
-	//Red: #BE0000
-	//Yellow: #F3DF13
+	//Blue: 167bffff
+	//Green: 25be00ff
+	//Red: be0000ff
+	//Yellow: f3df13ff
 	
 	public Game(int numOfPlayers, int difficulty) {
 		players = new ArrayList<Player>(numOfPlayers);
-		players.add(new Player("#167BFF", "Player1"));
-		players.add(new Player("#25BE00", "Player2"));
-		players.add(new Player("#BE0000", "Player3"));
-		players.add(new Player("#F3DF13", "Player4"));
+		players.add(new Player("167bffff", "Player1"));
+		players.add(new Player("25be00ff", "Player2"));
+		players.add(new Player("be0000ff", "Player3"));
+		players.add(new Player("f3df13ff", "Player4"));
 	}
 	
 	
