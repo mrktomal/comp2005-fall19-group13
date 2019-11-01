@@ -152,6 +152,7 @@ public class Board extends JFrame implements ActionListener {
 				// Check that there is an active piece touching a corner - Needs to be at least one			
 				if(!toCorner) {
 					if(this.touchingCorner(boardGrid[(int) (origin.x+c.getX())][(int) (origin.y+c.getY())], p.getColour())) {toCorner = true;}
+					// Square is in corner of grid - Must be first turn of game
 					else if((int)(origin.x+c.getX())==0 && (int)(origin.y+c.getY()) == 0 ||
 							(int)(origin.x+c.getX())==row-1 && (int)(origin.y+c.getY()) == 0 ||
 							(int)(origin.x+c.getX())==0 && (int)(origin.y+c.getY()) == col-1 ||
