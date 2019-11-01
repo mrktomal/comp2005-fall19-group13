@@ -13,9 +13,10 @@ import javax.swing.*; //Get all of Swing
 
 public class Board extends JFrame implements ActionListener {
 	
-	public class GridSquare extends JButton implements ActionListener{
+	protected class GridSquare extends JButton implements ActionListener{
 		
 		protected boolean active = false;
+		protected String colour = null;
 		protected int x; // x-coordinate
 		protected int y; // y-coordinate
 		
@@ -40,11 +41,16 @@ public class Board extends JFrame implements ActionListener {
 		
 		public void actionPerformed(ActionEvent e) {
 			Board.this.placePiece(GridSquare.this);
+			System.out.println("Square Selected: ("+x+" , "+y+")");
+			System.out.println("Path:");
+			Board.this.selectedPiece.piecePath().stream().forEach(point -> System.out.println(point.toString()));
+			System.out.println();
 		}
 		
 		public void setActive() {
 			active = true;
-			this.setBackground(Color.decode(Board.this.selectedPiece.getColour()));
+			colour = Board.this.selectedPiece.getColour();
+			this.setBackground(Color.decode(colour));
 		}
 		
 		public void setUnActive() {
@@ -79,7 +85,7 @@ public class Board extends JFrame implements ActionListener {
 		boardGrid = new GridSquare[row][col];
 		hoverQueue = new LinkedList<GridSquare>();
 		
-		selectedPiece = new Piece(19, "#2874A6");
+		selectedPiece = new Piece(7, "#2874A6"); // For testing
 				
 		for (int i = 0; i < row; i++) { 
 			for (int j = 0; j < col; j++) { 
@@ -133,8 +139,6 @@ public class Board extends JFrame implements ActionListener {
 	}
 	
 	// Determines if position is legal
-	// STILL NEED TO ADD COLOUR CHECK
-	// STILL NEED TO CHECK OPENING MOVE -- boardGrid[0][0] boardGrid[19][0] boardGrid[19][19] boardGrid[0][19]
 	// Need error checking for out of bounds
 	public boolean legalMove(Piece p, GridSquare origin) {
 		boolean valid = true;
@@ -144,19 +148,35 @@ public class Board extends JFrame implements ActionListener {
 		while(valid && !allChecked) {
 			for(Point c : p.piecePath()) {
 				// Check if there are any adjacent active squares - Not valid if there are
-				if(boardGrid[(int) (origin.x+c.getX()+1)][(int) (origin.y+c.getY())].active) {valid = false;}
-				else if(boardGrid[(int) (origin.x+c.getX())][(int) (origin.y+c.getY()+1)].active){valid = false;}
-				else if(boardGrid[(int) (origin.x+c.getX()-1)][(int) (origin.y+c.getY())].active) {valid = false;}
-				else if(boardGrid[(int) (origin.x+c.getX())][(int) (origin.y+c.getY()-1)].active) {valid = false;}
-				// Check that there is an active piece touching a corner
-				//if(boardGrid[(int) (origin.x+c.getX()+1)][(int) (origin.y+c.getY()+1)].active) {toCorner = true;}
-				//else if(boardGrid[(int) (origin.x+c.getX()+1)][(int) (origin.y+c.getY()-1)].active) {toCorner = true;}
-				//else if(boardGrid[(int) (origin.x+c.getX()-1)][(int) (origin.y+c.getY()-1)].active) {toCorner = true;}
-				//else if(boardGrid[(int) (origin.x+c.getX()-1)][(int) (origin.y+c.getY()+1)].active) {toCorner = true;}
+				if(this.squareAdjacent(boardGrid[(int) (origin.x+c.getX())][(int) (origin.y+c.getY())], p.getColour())) {valid=false;}
+				// Check that there is an active piece touching a corner - Needs to be at least one			
+				if(!toCorner) {
+					if(this.touchingCorner(boardGrid[(int) (origin.x+c.getX())][(int) (origin.y+c.getY())], p.getColour())) {toCorner = true;}
+					else if((int)(origin.x+c.getX())==0 && (int)(origin.y+c.getY()) == 0 ||
+							(int)(origin.x+c.getX())==row-1 && (int)(origin.y+c.getY()) == 0 ||
+							(int)(origin.x+c.getX())==0 && (int)(origin.y+c.getY()) == col-1 ||
+							(int)(origin.x+c.getX())==row-1 && (int)(origin.y+c.getY()) == col-1) {toCorner = true;}
+				}
 			}
 			allChecked = true;
 		}
-		return (valid); // && toCorner);
+		return (valid);// && toCorner);
+	}
+	
+	private boolean squareAdjacent(GridSquare centre, String colour) {
+		if(boardGrid[centre.x+1][centre.y].active && boardGrid[centre.x+1][centre.y].colour.equals(colour)) {return true;}
+		else if(boardGrid[centre.x][centre.y+1].active && boardGrid[centre.x][centre.y+1].colour.equals(colour)) {return true;}
+		else if(boardGrid[centre.x-1][centre.y].active && boardGrid[centre.x-1][centre.y].colour.equals(colour)) {return true;}
+		else if(boardGrid[centre.x+1][centre.y-1].active && boardGrid[centre.x][centre.y-1].colour.equals(colour)) {return true;}
+		return false;
+	}
+	
+	private boolean touchingCorner(GridSquare centre, String colour) {
+		if(boardGrid[centre.x+1][centre.y+1].active && boardGrid[centre.x+1][centre.y+1].colour.equals(colour)) {return true;}
+		else if(boardGrid[centre.x+1][centre.y-1].active && boardGrid[centre.x+1][centre.y-1].colour.equals(colour)) {return true;}
+		else if(boardGrid[centre.x-1][centre.y-1].active && boardGrid[centre.x-1][centre.y-1].colour.equals(colour)) {return true;}
+		else if(boardGrid[centre.x-1][centre.y+1].active && boardGrid[centre.x-1][centre.y+1].colour.equals(colour)) {return true;}
+		return false;
 	}
 	
 	public GridSquare[][] getBoard() {
