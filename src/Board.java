@@ -6,7 +6,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.stream.*;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -32,7 +32,22 @@ public class Board extends JFrame implements ActionListener {
 	            @Override
 	            public void mouseEntered(MouseEvent me) {
 	            	Board.this.hover(GridSquare.this);
-	            	//System.out.println(GridSquare.this.toString());
+	            }
+	            
+	            public void mouseExited(MouseEvent me) {
+	            	Board.this.unHover();
+	            }
+	            
+	        });
+		}
+		
+		public void newMouse() {
+			this.addMouseListener(new MouseAdapter() {
+
+	            @Override
+	            public void mouseEntered(MouseEvent me) {
+	            	Board.this.hover(GridSquare.this);
+	            	System.out.println("hovering");
 	            }
 	            
 	            public void mouseExited(MouseEvent me) {
@@ -45,6 +60,14 @@ public class Board extends JFrame implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			if (!this.active) {
 				Board.this.placePiece(GridSquare.this);
+				try {
+					currentGame.saveGame();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				System.out.println("Save Successful");
+				
 			}
 			System.out.println("Square Selected: ("+x+" , "+y+")");
 			System.out.println("Path:");
@@ -63,7 +86,6 @@ public class Board extends JFrame implements ActionListener {
 		public void setActive(String colour) {
 			if(!this.active) {
 				active = true;
-				this.colour = colour;
 				this.setBackground(Color.decode(colour));
 			}
 		}
@@ -90,11 +112,8 @@ public class Board extends JFrame implements ActionListener {
 			this.setBackground(Color.decode(colour));
 		}
 		
-		public String toString() {
-			return ("("+x+","+y+")" + "\nActive: " + active + "\nColour: " + colour);
-		}
-		
 	}
+	
 	
 	private JPanel gridPanel = new JPanel();
 	
@@ -106,12 +125,15 @@ public class Board extends JFrame implements ActionListener {
 	private int row = 24;
 	private int col = 24;
 	
-	public Board() {
+	public Game currentGame;
+	
+	public Board(Game newGame) {
+		currentGame = newGame;
 		// 2D array of board pieces	 
 		boardGrid = new GridSquare[row][col];
 		hoverQueue = new LinkedList<GridSquare>();
 		
-		selectedPiece = new Piece(18, "#25BE00"); // For testing
+		selectedPiece = new Piece(7, "#25BE00"); // For testing
 				
 		for (int i = 0; i < row; i++) { 
 			for (int j = 0; j < col; j++) { 
@@ -122,14 +144,26 @@ public class Board extends JFrame implements ActionListener {
 		} 		 
 	}
 	
+	public void loadNewMouse() {
+		for (int i = 0; i < row; i++) { 
+			for (int j = 0; j < col; j++) { 
+            	boardGrid[i][j].newMouse();
+	        }   
+		}
+	}
 	
-	public void drawBoard() {
+	
+	public void drawBoard(boolean resume) { // false for new game, true for resuming
 		 gridPanel.setLayout(new GridLayout(row, col));
 		 add(gridPanel);
 		 setSize(1920/2, 1080/2);
-		 setDefaultCloseOperation( JFrame.DISPOSE_ON_CLOSE );
 		 setBounds();
-		 setVisible(true);		 
+		 setVisible(true);		
+		 
+		 if (resume) {
+			 loadNewMouse();
+		 }
+		 
 	}
 	
 	private void setBounds() {
@@ -190,23 +224,27 @@ public class Board extends JFrame implements ActionListener {
 		while(valid && !allChecked) {
 			for(Point c : p.piecePath()) {
 				// Check if there are any adjacent active squares - Not valid if there are
-				if(boardGrid[(int) (origin.x+c.getX())][(int) (origin.y+c.getY())].active) {valid=false;}
 				if(this.squareAdjacent(boardGrid[(int) (origin.x+c.getX())][(int) (origin.y+c.getY())], p.getColour())) {valid=false;}
 				// Check that there is an active piece touching a corner - Needs to be at least one			
 				if(!toCorner) {
 					if(this.touchingCorner(boardGrid[(int) (origin.x+c.getX())][(int) (origin.y+c.getY())], p.getColour())) {toCorner = true;}
+					// Square is in corner of grid - Must be first turn of game
+//					else if((int)(origin.x+c.getX())==0 && (int)(origin.y+c.getY()) == 0 ||
+//							(int)(origin.x+c.getX())==row-2 && (int)(origin.y+c.getY()) == 0 ||
+//							(int)(origin.x+c.getX())==0 && (int)(origin.y+c.getY()) == col-2 ||
+//							(int)(origin.x+c.getX())==row-2 && (int)(origin.y+c.getY()) == col-2) {toCorner = true;}
 				}
 			}
 			allChecked = true;
 		}
-		return (valid && toCorner);
+		return (valid);
 	}
 	
 	private boolean squareAdjacent(GridSquare centre, String colour) {
 		if(boardGrid[centre.x+1][centre.y].active && boardGrid[centre.x+1][centre.y].colour.equals(colour)) {return true;}
 		else if(boardGrid[centre.x][centre.y+1].active && boardGrid[centre.x][centre.y+1].colour.equals(colour)) {return true;}
 		else if(boardGrid[centre.x-1][centre.y].active && boardGrid[centre.x-1][centre.y].colour.equals(colour)) {return true;}
-		else if(boardGrid[centre.x][centre.y-1].active && boardGrid[centre.x][centre.y-1].colour.equals(colour)) {return true;}
+		else if(boardGrid[centre.x+1][centre.y-1].active && boardGrid[centre.x][centre.y-1].colour.equals(colour)) {return true;}
 		return false;
 	}
 	
@@ -224,14 +262,6 @@ public class Board extends JFrame implements ActionListener {
 	
 	public void actionPerformed(ActionEvent e){
 		//Probably not needed
-	}
-	
-	public String toString() {
-		String grid = "";
-		for (int i=0; i<row; i++) {
-			grid = grid + "[" + Arrays.stream(boardGrid[i]).map(gs -> gs.colour).reduce((str1, str2) -> str1 + "," + str2) + "]\n";
-		}
-		return grid;
-	}
+}
 }
 
