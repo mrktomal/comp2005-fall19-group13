@@ -1,13 +1,24 @@
 import javax.swing.SwingUtilities;
 import java.util.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 
-public class Game {
+public class Game implements Serializable{
 
 	public ArrayList<Player> players;
 	public Board board;
 	public boolean hints;
 	public boolean visImpaired;
 	public boolean playing;
+	
+	public File boardSaveFile;
+	public File playersSaveFile;
 	
 	public TestingInterface testPanel;
 	
@@ -25,12 +36,16 @@ public class Game {
 		players.add(new Player("#F3DF13", "Player4"));
 	}
 	
+	public Game() {
+		// For loading
+	}
+	
 	
 	public void startGame(){
 		board = new Board();
-		board.drawBoard();
+		board.drawBoard(false);
 		
-		testPanel = new TestingInterface(board, players);
+		testPanel = new TestingInterface(board, players, this);
 		testPanel.init();
 		
 		playing = true;
@@ -45,9 +60,39 @@ public class Game {
 		
 	}
 	
-	public void saveGame(){}
+	public void saveGame() throws IOException{
+		//save board to a textfile called prevBoard.txt
+		boardSaveFile = new File ("prevBoard.txt");
+		FileOutputStream boardFileOutStream = new FileOutputStream(boardSaveFile);
+		ObjectOutputStream boardObjectOutStream = new ObjectOutputStream(boardFileOutStream);
+		boardObjectOutStream.writeObject(board);
 
-	public void resumeGame(){}
+		//save players linked list to text file called prevPlayers.txt
+		playersSaveFile = new File ("prevPlayers.txt");
+		FileOutputStream playersFileOutStream = new FileOutputStream(playersSaveFile);
+		ObjectOutputStream playersObjectOutStream = new ObjectOutputStream(playersFileOutStream);
+		playersObjectOutStream.writeObject(players);
+	}
+	
+	public void loadGame() throws IOException, ClassNotFoundException{
+		//board = prevBoard.txt
+		FileInputStream boardFileInStream = new FileInputStream ("prevBoard.txt");
+		ObjectInputStream boardObjectInStream = new ObjectInputStream (boardFileInStream);
+		board = (Board) boardObjectInStream.readObject();
+
+		//players = prevPlayers.txt
+		FileInputStream playersFileInStream = new FileInputStream ("prevPlayers.txt");
+		ObjectInputStream playersObjectInStream = new ObjectInputStream (playersFileInStream);
+		players = (ArrayList<Player>) playersObjectInStream.readObject();
+		
+		testPanel = new TestingInterface(board, players, this);
+		testPanel.init();
+
+	}
+	
+	public void loadBoard() {
+		board.drawBoard(true);
+	}
 
 	public void toggleHints(){
 		if(hints == true){

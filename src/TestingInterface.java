@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.util.*;
 
 public class TestingInterface extends JFrame implements ActionListener {
@@ -13,13 +14,15 @@ public class TestingInterface extends JFrame implements ActionListener {
 	//private JLabel lRotate, lFlipH, lFlipV, lSave;
 	
 	private Board gameBoard;
+	private Game currentGame;
 	private ArrayList<Player> testPlayers;
 	private Player currentPlayer;
 	
-	public TestingInterface(Board gameBoard, ArrayList<Player> players) {
+	public TestingInterface(Board gameBoard, ArrayList<Player> players, Game game) {
 		
 		testPlayers = players; 
 		currentPlayer = testPlayers.get(0);
+		currentGame = game;
 		this.gameBoard = gameBoard;
 		
 		frame = new JFrame("Testing");
@@ -86,7 +89,15 @@ public class TestingInterface extends JFrame implements ActionListener {
 			Piece curPiece = gameBoard.getSelectedPiece();
 			gameBoard.setSelectedPiece(currentPlayer.getPieces().get((curPiece.getID()+1)%21));
 			display.setText(gameBoard.getSelectedPiece().toString());
-
+		}
+		else if(source == bSave) {
+			try {
+				currentGame.saveGame();
+			}
+			catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 		}
 		
 	}

@@ -1,7 +1,8 @@
 import java.awt.Point;
 import java.util.*;
+import java.io.Serializable;
 
-public final class Piece {
+public final class Piece  implements Serializable{
 	
 	public final int[][] squares; // 5x5 matrix to represent piece
 	private static int[][][] pieceBank;   // Stores each possible piece.

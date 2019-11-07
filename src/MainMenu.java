@@ -2,6 +2,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+
 
 public class MainMenu implements ActionListener {
     private JFrame frame;
@@ -32,6 +34,7 @@ public class MainMenu implements ActionListener {
         panel.add(butCredits);
         butLoadGame.setBounds(250,400,150,60);
         panel.add(butLoadGame);
+        butLoadGame.addActionListener(this);
         butNewGame.setBounds(650,400,150,60);
         panel.add(butNewGame);
         butNewGame.addActionListener(this);
@@ -47,15 +50,35 @@ public class MainMenu implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         final Object source = e.getSource();
 
-        if (source == butNewGame);{
+        if (source == butNewGame){
             NewGameMenu NMen = new NewGameMenu();
             NMen.init();
             frame.setVisible(false);
+        }
+        else if(source == butLoadGame) {
+        	//load board
+        	//load players
+        	//game constructor with board and players
 
+        	frame.setVisible(false);
+
+        	System.out.println("Create Game");
+
+        	Game test = new Game();
+        	try { 
+				test.loadGame();
+			} catch (ClassNotFoundException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+
+            //Once loaded, resume game
+        	test.loadBoard(); 
 
         }
-
-
     }
 }
 

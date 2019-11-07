@@ -24,7 +24,7 @@ public class GameWindow extends JFrame implements ActionListener{
 		
 		this.add(gameBoard, constr);
 		
-		gameBoard.drawBoard();
+		gameBoard.drawBoard(false);
 		this.setVisible(true);
 		
 	}

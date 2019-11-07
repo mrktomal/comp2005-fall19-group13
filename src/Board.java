@@ -44,6 +44,20 @@ public class Board extends JFrame implements ActionListener {
 	        });
 		}
 		
+		public void newMouse() {
+			this.addMouseListener(new MouseAdapter() {
+				
+				@Override
+				public void mouseEntered(MouseEvent e) {
+					Board.this.hover(GridSquare.this);
+				}
+				
+				public void mouseExited(MouseEvent e) {
+					Board.this.unHover();
+				}
+			});
+		}
+		
 		public void actionPerformed(ActionEvent e) {
 			if (!this.active && Board.this.pieceSelected()) {
 				Board.this.placePiece(GridSquare.this);
@@ -127,14 +141,18 @@ public class Board extends JFrame implements ActionListener {
 	}
 	
 	
-	public void drawBoard() {
+	public void drawBoard(boolean resume) {
 		 gridPanel.setLayout(new GridLayout(row, col));
 		 add(gridPanel);
 		 //setSize(1920/2, 1080/2);
 		 setSize(750,750);
 		 setDefaultCloseOperation( JFrame.DISPOSE_ON_CLOSE );
 		 setBounds();
-		 setVisible(true);		 
+		 setVisible(true);
+		 
+		 if(resume) {
+			 loadNewMouse();
+		 }
 	}
 	
 	private void setBounds() {
@@ -237,6 +255,14 @@ public class Board extends JFrame implements ActionListener {
 	
 	public void actionPerformed(ActionEvent e){
 		//Probably not needed
+	}
+	
+	public void loadNewMouse() {
+		for (int i = 0; i < row; i++) { 
+			for (int j = 0; j < col; j++) { 
+            	boardGrid[i][j].newMouse();
+	        }   
+		}
 	}
 	
 	public String toString() {
