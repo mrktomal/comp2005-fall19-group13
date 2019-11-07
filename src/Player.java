@@ -45,4 +45,8 @@ public class Player {
 		score = pieces.stream().mapToInt(p -> p.getSize()).sum();
 	}
 	
+	public ArrayList<Piece> getPieces() {
+		return pieces;
+	}
+	
 }

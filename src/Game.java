@@ -9,34 +9,40 @@ public class Game {
 	public boolean visImpaired;
 	public boolean playing;
 	
+	public TestingInterface testPanel;
+	
 	//Colours: Color.decode(String)
-	//Blue: 167bffff
-	//Green: 25be00ff
-	//Red: be0000ff
-	//Yellow: f3df13ff
+	//Blue: #167BFF
+	//Green: #25BE00
+	//Red: #BE0000
+	//Yellow: #F3DF13
 	
 	public Game(int numOfPlayers, int difficulty) {
 		players = new ArrayList<Player>(numOfPlayers);
-		players.add(new Player("167bffff", "Player1"));
-		players.add(new Player("25be00ff", "Player2"));
-		players.add(new Player("be0000ff", "Player3"));
-		players.add(new Player("f3df13ff", "Player4"));
+		players.add(new Player("#167BFF", "Player1"));
+		players.add(new Player("#25BE00", "Player2"));
+		players.add(new Player("#BE0000", "Player3"));
+		players.add(new Player("#F3DF13", "Player4"));
 	}
 	
 	
 	public void startGame(){
 		board = new Board();
 		board.drawBoard();
+		
+		testPanel = new TestingInterface(board, players);
+		testPanel.init();
+		
 		playing = true;
 		play();
 	}
 
 	public void endGame(){
-		board.dispose();
+		//board.dispose();
 	}
 	
 	public void play() {
-
+		
 	}
 	
 	public void saveGame(){}

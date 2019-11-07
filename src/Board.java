@@ -31,7 +31,9 @@ public class Board extends JFrame implements ActionListener {
 
 	            @Override
 	            public void mouseEntered(MouseEvent me) {
-	            	Board.this.hover(GridSquare.this);
+	            	if (Board.this.pieceSelected()) {
+	            		Board.this.hover(GridSquare.this);
+	            	}
 	            	//System.out.println(GridSquare.this.toString());
 	            }
 	            
@@ -43,13 +45,13 @@ public class Board extends JFrame implements ActionListener {
 		}
 		
 		public void actionPerformed(ActionEvent e) {
-			if (!this.active) {
+			if (!this.active && Board.this.pieceSelected()) {
 				Board.this.placePiece(GridSquare.this);
+				System.out.println("Square Selected: ("+x+" , "+y+")");
+				System.out.println("Path:");
+				Board.this.selectedPiece.piecePath().stream().forEach(point -> System.out.println(point.toString()));
+				System.out.println();
 			}
-			System.out.println("Square Selected: ("+x+" , "+y+")");
-			System.out.println("Path:");
-			Board.this.selectedPiece.piecePath().stream().forEach(point -> System.out.println(point.toString()));
-			System.out.println();
 		}
 		
 		public void setActive() {
@@ -111,7 +113,9 @@ public class Board extends JFrame implements ActionListener {
 		boardGrid = new GridSquare[row][col];
 		hoverQueue = new LinkedList<GridSquare>();
 		
-		selectedPiece = new Piece(18, "#25BE00"); // For testing
+		//selectedPiece = new Piece(18, "#25BE00"); // For testing
+		
+		
 				
 		for (int i = 0; i < row; i++) { 
 			for (int j = 0; j < col; j++) { 
@@ -126,7 +130,8 @@ public class Board extends JFrame implements ActionListener {
 	public void drawBoard() {
 		 gridPanel.setLayout(new GridLayout(row, col));
 		 add(gridPanel);
-		 setSize(1920/2, 1080/2);
+		 //setSize(1920/2, 1080/2);
+		 setSize(750,750);
 		 setDefaultCloseOperation( JFrame.DISPOSE_ON_CLOSE );
 		 setBounds();
 		 setVisible(true);		 
@@ -171,13 +176,20 @@ public class Board extends JFrame implements ActionListener {
 		selectedPiece = p;
 	}
 	
+	public Piece getSelectedPiece() {
+		return selectedPiece;
+	}
+	
+	public boolean pieceSelected() {
+		return !(this.selectedPiece == null);
+	}
+	
 	public void placePiece(GridSquare origin) {
 		if(legalMove(selectedPiece, origin)) {	
 			for(Point c : selectedPiece.piecePath()) {
 				boardGrid[origin.x + (int)c.getX()][origin.y + (int)c.getY()].setActive();
 			}
 		}
-		
 	}
 	
 	// Determines if position is legal
@@ -187,6 +199,7 @@ public class Board extends JFrame implements ActionListener {
 		boolean allChecked = false;
 		boolean toCorner = false;
 		// Check conditions for each square in Piece
+		if(!pieceSelected()) {return false;} // Bail if there's no piece selected
 		while(valid && !allChecked) {
 			for(Point c : p.piecePath()) {
 				// Check if there are any adjacent active squares - Not valid if there are

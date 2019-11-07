@@ -83,6 +83,6 @@ public class NewGameMenu implements ActionListener{
             Game test = new Game(numOfPlayers, difficulty);
             test.startGame();
         }
-
+ 
     }
 }
