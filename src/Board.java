@@ -1,6 +1,7 @@
 import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -13,7 +14,7 @@ import java.util.Queue;
 import javax.swing.JButton;
 import javax.swing.*; //Get all of Swing
 
-public class Board extends JFrame implements ActionListener {
+public class Board extends JPanel implements ActionListener {
 	
 	protected class GridSquare extends JButton implements ActionListener{
 		
@@ -112,44 +113,38 @@ public class Board extends JFrame implements ActionListener {
 		
 	}
 	
-	private JPanel gridPanel = new JPanel();
+	//private JPanel gridPanel = new JPanel();
 	
 	private GridSquare [][] boardGrid;
 	private Piece selectedPiece;
+	private Game currentGame;
 	
 	private Queue<GridSquare> hoverQueue;
 	
 	private int row = 24;
 	private int col = 24;
 	
-	public Board() {
+	public Board(Game gm) {
 		// 2D array of board pieces	 
 		boardGrid = new GridSquare[row][col];
 		hoverQueue = new LinkedList<GridSquare>();
-		
-		//selectedPiece = new Piece(18, "#25BE00"); // For testing
-		
-		
+		currentGame = gm;
+		this.setPreferredSize(new Dimension(600,600));
 				
 		for (int i = 0; i < row; i++) { 
 			for (int j = 0; j < col; j++) { 
             	boardGrid[i][j] = new GridSquare(i, j);
             	boardGrid[i][j].addActionListener(this);
-            	gridPanel.add(boardGrid[i][j]);
+            	//gridPanel.add(boardGrid[i][j]);
+            	add(boardGrid[i][j]);
 	        }   
 		} 		 
 	}
 	
 	
 	public void drawBoard(boolean resume) {
-		 gridPanel.setLayout(new GridLayout(row, col));
-		 add(gridPanel);
-		 //setSize(1920/2, 1080/2);
-		 setSize(750,750);
-		 setDefaultCloseOperation( JFrame.DISPOSE_ON_CLOSE );
-		 setBounds();
-		 setVisible(true);
-		 
+		 setLayout(new GridLayout(row, col));
+		 setBounds(); 
 		 if(resume) {
 			 loadNewMouse();
 		 }
@@ -207,6 +202,7 @@ public class Board extends JFrame implements ActionListener {
 			for(Point c : selectedPiece.piecePath()) {
 				boardGrid[origin.x + (int)c.getX()][origin.y + (int)c.getY()].setActive();
 			}
+			currentGame.piecePlayed(selectedPiece);
 		}
 	}
 	

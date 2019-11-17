@@ -5,9 +5,9 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.*;
 
-public class TestingInterface extends JFrame implements ActionListener {
+public class TestingInterface extends JPanel implements ActionListener {
 	
-	private JFrame frame;
+	//private JFrame frame;
 	private JPanel panel;
 	private JButton bRotate, bFlipH, bFlipV, bSave, bNextPiece, bNextPlayer;
 	private JTextArea display;
@@ -25,8 +25,8 @@ public class TestingInterface extends JFrame implements ActionListener {
 		currentGame = game;
 		this.gameBoard = gameBoard;
 		
-		frame = new JFrame("Testing");
-		frame.setResizable(true);
+		//frame = new JFrame("Testing");
+		//frame.setResizable(true);
 		panel = new JPanel();
 		
 		display = new JTextArea(10,8);
@@ -40,13 +40,13 @@ public class TestingInterface extends JFrame implements ActionListener {
 	}
 	
 	public void init() {
-		frame.setLayout(new FlowLayout());
+		//frame.setLayout(new FlowLayout());
 		//frame.setComponentOrientation(ComponentOrientation.TOP_TO_BOTTOM);
-		frame.setSize(800, 200);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.add(panel);
+		//frame.setSize(800, 200);
+		//frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		add(panel);
 		
-		panel.add(display);
+		add(display);
 		panel.add(bRotate);
 		panel.add(bFlipH);
 		panel.add(bFlipV);
@@ -65,7 +65,7 @@ public class TestingInterface extends JFrame implements ActionListener {
 		gameBoard.setSelectedPiece(currentPlayer.getPieces().get(0));
 		display.setText(gameBoard.getSelectedPiece().toString());
 		
-		frame.setVisible(true);
+		//frame.setVisible(true);
 		
 	}
 	

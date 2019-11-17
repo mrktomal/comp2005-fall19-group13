@@ -12,6 +12,7 @@ import java.io.Serializable;
 public class Game implements Serializable{
 
 	public ArrayList<Player> players;
+	public Player currentPlayer;
 	public Board board;
 	public boolean hints;
 	public boolean visImpaired;
@@ -20,7 +21,7 @@ public class Game implements Serializable{
 	public File boardSaveFile;
 	public File playersSaveFile;
 	
-	public TestingInterface testPanel;
+	//public TestingInterface testPanel;
 	
 	//Colours: Color.decode(String)
 	//Blue: #167BFF
@@ -42,13 +43,11 @@ public class Game implements Serializable{
 	
 	
 	public void startGame(){
-		board = new Board();
+		board = new Board(this);
 		board.drawBoard(false);
+		currentPlayer = players.get(0);		
+		new GameFrame(board, players, this);
 		
-		testPanel = new TestingInterface(board, players, this);
-		testPanel.init();
-		
-		playing = true;
 		play();
 	}
 
@@ -57,7 +56,17 @@ public class Game implements Serializable{
 	}
 	
 	public void play() {
-		
+		playing = true;
+		while(playing) {
+			board.setSelectedPiece(currentPlayer.getPieces().get(0));
+			playing = false;
+		}
+	}
+	
+	public void piecePlayed(Piece currPiece) {
+		currentPlayer.getPieces().removeIf(pc -> pc.getID()==currPiece.getID());
+		currentPlayer = players.get((players.indexOf(currentPlayer)+1)%players.size());
+		board.setSelectedPiece(currentPlayer.getPieces().get(0));
 	}
 	
 	public void saveGame() throws IOException{
@@ -85,8 +94,8 @@ public class Game implements Serializable{
 		ObjectInputStream playersObjectInStream = new ObjectInputStream (playersFileInStream);
 		players = (ArrayList<Player>) playersObjectInStream.readObject();
 		
-		testPanel = new TestingInterface(board, players, this);
-		testPanel.init();
+		//testPanel = new TestingInterface(board, players, this);
+		//testPanel.init();
 
 	}
 	
@@ -111,5 +120,8 @@ public class Game implements Serializable{
 			visImpaired = true;
 		}
 	}
-
+	
+	public Player getCurrentPlayer() {
+		return currentPlayer;
+	}
 }
