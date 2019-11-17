@@ -113,8 +113,6 @@ public class Board extends JPanel implements ActionListener {
 		
 	}
 	
-	//private JPanel gridPanel = new JPanel();
-	
 	private GridSquare [][] boardGrid;
 	private Piece selectedPiece;
 	private Game currentGame;
@@ -149,15 +147,19 @@ public class Board extends JPanel implements ActionListener {
 			 loadNewMouse();
 		 }
 	}
-	
+	//Colours: Color.decode(String)
+	//Blue: #167BFF
+	//Green: #25BE00
+	//Red: #BE0000
+	//Yellow: #F3DF13
 	private void setBounds() {
 		for (int i = 0; i < row; i++) { 
 			for (int j = 0; j < col; j++) { 
 		    	if(i==0||i==1||i==22||i==23||j==0||j==1||j==22||j==23) {
-		    		if(i==1 && j==1) {boardGrid[i][j].setActive("#167BFF");}
-		    		else if(i==1 && j==22) {boardGrid[i][j].setActive("#25BE00");}
-		    		else if(i==22 && j==22) {boardGrid[i][j].setActive("#BE0000");}
-		    		else if(i==22 && j==1) {boardGrid[i][j].setActive("#F3DF13");}
+		    		if(i==1 && j==1) {boardGrid[i][j].setActive("#F3DF13");}
+		    		else if(i==1 && j==22) {boardGrid[i][j].setActive("#BE0000");}
+		    		else if(i==22 && j==22) {boardGrid[i][j].setActive("#25BE00");}
+		    		else if(i==22 && j==1) {boardGrid[i][j].setActive("#167BFF");}
 		    		else {boardGrid[i][j].setActive("#3A352B");}
 		    	}
 			}
@@ -259,6 +261,21 @@ public class Board extends JPanel implements ActionListener {
             	boardGrid[i][j].newMouse();
 	        }   
 		}
+	}
+	
+	@Override
+	public Dimension getPreferredSize() {
+		return new Dimension(600,600);
+	}
+	
+	@Override
+	public Dimension getMinimumSize() {
+		return new Dimension(250,250);
+	}
+	
+	@Override
+	public Dimension getMaximumSize() {
+		return new Dimension(800,800);
 	}
 	
 	public String toString() {

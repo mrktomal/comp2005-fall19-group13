@@ -50,4 +50,8 @@ public class Player implements Serializable{
 		return pieces;
 	}
 	
+	public Piece getPiece(int ID) {
+		return pieces.stream().filter(pc -> pc.getID() == ID).findFirst().get();
+	}
+	
 }

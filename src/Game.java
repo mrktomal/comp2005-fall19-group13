@@ -11,15 +11,16 @@ import java.io.Serializable;
 
 public class Game implements Serializable{
 
-	public ArrayList<Player> players;
-	public Player currentPlayer;
-	public Board board;
-	public boolean hints;
-	public boolean visImpaired;
-	public boolean playing;
+	private ArrayList<Player> players;
+	private Player currentPlayer;
+	private Board board;
+	private GameFrame window;
+	private boolean hints;
+	private boolean visImpaired;
+	private boolean playing;
 	
-	public File boardSaveFile;
-	public File playersSaveFile;
+	private File boardSaveFile;
+	private File playersSaveFile;
 	
 	//public TestingInterface testPanel;
 	
@@ -32,9 +33,9 @@ public class Game implements Serializable{
 	public Game(int numOfPlayers, int difficulty) {
 		players = new ArrayList<Player>(numOfPlayers);
 		players.add(new Player("#167BFF", "Player1"));
-		players.add(new Player("#25BE00", "Player2"));
+		players.add(new Player("#F3DF13", "Player2"));
 		players.add(new Player("#BE0000", "Player3"));
-		players.add(new Player("#F3DF13", "Player4"));
+		players.add(new Player("#25BE00", "Player4"));
 	}
 	
 	public Game() {
@@ -46,7 +47,7 @@ public class Game implements Serializable{
 		board = new Board(this);
 		board.drawBoard(false);
 		currentPlayer = players.get(0);		
-		new GameFrame(board, players, this);
+		window = new GameFrame(board, players, this);
 		
 		play();
 	}
@@ -67,6 +68,7 @@ public class Game implements Serializable{
 		currentPlayer.getPieces().removeIf(pc -> pc.getID()==currPiece.getID());
 		currentPlayer = players.get((players.indexOf(currentPlayer)+1)%players.size());
 		board.setSelectedPiece(currentPlayer.getPieces().get(0));
+		window.drawPieceBench();
 	}
 	
 	public void saveGame() throws IOException{
