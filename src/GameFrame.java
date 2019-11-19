@@ -67,6 +67,7 @@ public class GameFrame extends JFrame implements ActionListener{
 		buttons.add(new JButton("Rotate"));
 		buttons.add(new JButton("Flip - Horizontal"));
 		buttons.add(new JButton("Flip - Vertical"));
+		buttons.add(new JButton("Save Game"));
 		buttons.forEach(b -> b.addActionListener(this));
 		buttons.forEach(b -> addButton(b, mainPane, gbc, BUTTON_START_POS, buttons.indexOf(b)));
 		
@@ -102,10 +103,16 @@ public class GameFrame extends JFrame implements ActionListener{
 		final Object source = e.getSource();
 		if(buttons.contains(source)) {
 			int indx = buttons.indexOf(source);
+			System.out.println("Button: "+indx);
 			switch(indx) {
 				case 0: board.getSelectedPiece().rotate();
 				case 1: board.getSelectedPiece().flipH();
 				case 2: board.getSelectedPiece().flipV();
+				case 3: try{currentGame.saveGame();
+						} catch (IOException e1) {
+							
+							e1.printStackTrace();
+						}
 			}
 		}
 		else if(pieceButtons.contains(source)) {

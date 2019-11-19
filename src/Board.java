@@ -24,7 +24,7 @@ public class Board extends JPanel implements ActionListener {
 		protected int y; // y-coordinate
 		
 		public GridSquare(int newRow, int newCol) {
-			
+			super();
 			x = newRow;
 			y = newCol;
 			this.addActionListener(this);
@@ -133,7 +133,6 @@ public class Board extends JPanel implements ActionListener {
 			for (int j = 0; j < col; j++) { 
             	boardGrid[i][j] = new GridSquare(i, j);
             	boardGrid[i][j].addActionListener(this);
-            	//gridPanel.add(boardGrid[i][j]);
             	add(boardGrid[i][j]);
 	        }   
 		} 		 
@@ -229,6 +228,24 @@ public class Board extends JPanel implements ActionListener {
 			allChecked = true;
 		}
 		return (valid && toCorner);
+	}
+	
+	public boolean legalMovesRemain(Player plr) {
+		boolean movesRemain = false;
+		for(GridSquare[] r : boardGrid) {
+			for(GridSquare c : r) {
+				for(Piece pc : plr.getPieces()){
+					for(int i=0; i<4; i++) {
+						movesRemain = legalMove(pc, c);
+						pc.rotate();
+					}
+					pc.flipH();
+					movesRemain = legalMove(pc, c);
+					pc.flipV();
+				}
+			}
+		}
+		return movesRemain;
 	}
 	
 	private boolean squareAdjacent(GridSquare centre, String colour) {

@@ -15,14 +15,13 @@ public class Game implements Serializable{
 	private Player currentPlayer;
 	private Board board;
 	private GameFrame window;
+	private int numOfPlayers;
 	private boolean hints;
 	private boolean visImpaired;
 	private boolean playing;
 	
 	private File boardSaveFile;
 	private File playersSaveFile;
-	
-	//public TestingInterface testPanel;
 	
 	//Colours: Color.decode(String)
 	//Blue: #167BFF
@@ -31,6 +30,7 @@ public class Game implements Serializable{
 	//Yellow: #F3DF13
 	
 	public Game(int numOfPlayers, int difficulty) {
+		this.numOfPlayers = numOfPlayers;
 		players = new ArrayList<Player>(numOfPlayers);
 		players.add(new Player("#167BFF", "Player1"));
 		players.add(new Player("#F3DF13", "Player2"));
@@ -46,14 +46,16 @@ public class Game implements Serializable{
 	public void startGame(){
 		board = new Board(this);
 		board.drawBoard(false);
-		currentPlayer = players.get(0);		
+		currentPlayer = players.get(0);	
+		currentPlayer.setActive(true);
 		window = new GameFrame(board, players, this);
-		
 		play();
 	}
 
 	public void endGame(){
-		//board.dispose();
+		//switch(numOfPlayers) {
+		//	case 2: 
+		//}
 	}
 	
 	public void play() {
@@ -65,10 +67,29 @@ public class Game implements Serializable{
 	}
 	
 	public void piecePlayed(Piece currPiece) {
+		currentPlayer.setActive(false);
 		currentPlayer.getPieces().removeIf(pc -> pc.getID()==currPiece.getID());
-		currentPlayer = players.get((players.indexOf(currentPlayer)+1)%players.size());
+		if(currPiece.getID()==0 && !currentPlayer.hasPieces()) {currentPlayer.bonusPoints();}
+		nextPlayer();
 		board.setSelectedPiece(currentPlayer.getPieces().get(0));
+		currentPlayer.setActive(false);
 		window.drawPieceBench();
+	}
+	
+	public void nextPlayer() {
+		boolean gameOver = false;
+		Player prevPlayer = currentPlayer;
+		currentPlayer = players.get((players.indexOf(currentPlayer)+1)%players.size());
+		
+		while(!currentPlayer.hasPieces()||gameOver) {
+			currentPlayer = players.get((players.indexOf(currentPlayer)+1)%players.size());
+			if(currentPlayer.equals(prevPlayer)) {
+				gameOver = true;
+			}
+		}
+		if(gameOver) {
+			this.endGame();
+		}
 	}
 	
 	public void saveGame() throws IOException{
@@ -77,12 +98,14 @@ public class Game implements Serializable{
 		FileOutputStream boardFileOutStream = new FileOutputStream(boardSaveFile);
 		ObjectOutputStream boardObjectOutStream = new ObjectOutputStream(boardFileOutStream);
 		boardObjectOutStream.writeObject(board);
+		boardObjectOutStream.close();
 
 		//save players linked list to text file called prevPlayers.txt
 		playersSaveFile = new File ("prevPlayers.txt");
 		FileOutputStream playersFileOutStream = new FileOutputStream(playersSaveFile);
 		ObjectOutputStream playersObjectOutStream = new ObjectOutputStream(playersFileOutStream);
 		playersObjectOutStream.writeObject(players);
+		playersObjectOutStream.close();
 	}
 	
 	public void loadGame() throws IOException, ClassNotFoundException{
@@ -90,14 +113,17 @@ public class Game implements Serializable{
 		FileInputStream boardFileInStream = new FileInputStream ("prevBoard.txt");
 		ObjectInputStream boardObjectInStream = new ObjectInputStream (boardFileInStream);
 		board = (Board) boardObjectInStream.readObject();
+		boardObjectInStream.close();
 
 		//players = prevPlayers.txt
 		FileInputStream playersFileInStream = new FileInputStream ("prevPlayers.txt");
 		ObjectInputStream playersObjectInStream = new ObjectInputStream (playersFileInStream);
 		players = (ArrayList<Player>) playersObjectInStream.readObject();
+		playersObjectInStream.close();
 		
-		//testPanel = new TestingInterface(board, players, this);
-		//testPanel.init();
+		currentPlayer = players.stream().filter(pl -> pl.isActive()).findFirst().get();
+		
+		window = new GameFrame(board, players, this);
 
 	}
 	
@@ -126,4 +152,12 @@ public class Game implements Serializable{
 	public Player getCurrentPlayer() {
 		return currentPlayer;
 	}
+	
+
+	
+	
+	
+	
+	
+	
 }

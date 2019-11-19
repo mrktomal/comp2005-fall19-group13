@@ -91,9 +91,10 @@ public final class Piece  implements Serializable{
 	}
 	
 	public void flipV() {
+		int temp;
 		for (int row=0; row < 5/2; row++) {
 			for(int col=0; col < 5; col++) {
-				int temp = squares[row][col];
+				temp = squares[row][col];
 				squares[row][col] = squares[4-row][col];
 				squares[4-row][col] = temp;
 			}
@@ -102,13 +103,18 @@ public final class Piece  implements Serializable{
 	}
 	
 	public void flipH() {
-		for (int col=0; col < 5/2; col++) {
-			for(int row=0; row < 5; row++) {
-				int temp = squares[row][col];
+		System.out.println(this);
+		int temp;
+		for (int row=0; row < 5; row++) {
+			for(int col=0; col < 2; col++) {
+				temp = squares[row][col];
 				squares[row][col] = squares[row][4-col];
 				squares[row][4-col] = temp;
 			}
 		}
+		System.out.println("Flipping...");
+		System.out.println(this);
+		System.out.println(this.piecePath());
 	}
 	
 	public ArrayList<Point> piecePath(){
@@ -121,7 +127,6 @@ public final class Piece  implements Serializable{
 			}
 		}
 		return path;
-		
 	}
 
 	public String toString() {
