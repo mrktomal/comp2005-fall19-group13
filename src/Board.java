@@ -240,7 +240,16 @@ public class Board extends JPanel implements ActionListener {
 						pc.rotate();
 					}
 					pc.flipH();
-					movesRemain = legalMove(pc, c);
+					for(int i=0; i<4; i++) {
+						movesRemain = legalMove(pc, c);
+						pc.rotate();
+					}
+					pc.flipH();
+					pc.flipV();
+					for(int i=0; i<4; i++) {
+						movesRemain = legalMove(pc, c);
+						pc.rotate();
+					}
 					pc.flipV();
 				}
 			}
@@ -282,7 +291,7 @@ public class Board extends JPanel implements ActionListener {
 	
 	@Override
 	public Dimension getPreferredSize() {
-		return new Dimension(600,600);
+		return new Dimension(900,900);
 	}
 	
 	@Override
@@ -292,7 +301,7 @@ public class Board extends JPanel implements ActionListener {
 	
 	@Override
 	public Dimension getMaximumSize() {
-		return new Dimension(800,800);
+		return new Dimension(1000,1000);
 	}
 	
 	public String toString() {

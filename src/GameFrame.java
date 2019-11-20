@@ -33,15 +33,15 @@ public class GameFrame extends JFrame implements ActionListener{
 		mainPane.setLayout(layout);
 		
 		//add Board
-		gbc.gridx = BOARD_POS;
-		gbc.gridy = BOARD_POS;
+		//gbc.gridx = BOARD_POS;
+		//gbc.gridy = BOARD_POS;
 		gbc.gridheight = BOARD_WIDTH;
 		gbc.gridwidth = BOARD_WIDTH;
 		gbc.weightx = 1.0;
 		gbc.weighty = 1.0;
-		gbc.insets = new Insets(0,0,0,0);
+		gbc.insets = new Insets(10,10,10,10);
 		gbc.anchor = GridBagConstraints.CENTER;
-		gbc.fill = GridBagConstraints.BOTH;
+		gbc.fill = GridBagConstraints.NONE;
 		mainPane.add(board, gbc);
 		
 		//Piece Bench
@@ -52,8 +52,8 @@ public class GameFrame extends JFrame implements ActionListener{
 		gbc.gridy = PIECEDISPLAY_POS;
 		gbc.gridwidth = BOARD_WIDTH;
 		gbc.gridheight = 1;
-		gbc.weightx = 0.1;
-		gbc.weighty = 0.1;
+		gbc.weightx = 0.2;
+		gbc.weighty = 0.2;
 		gbc.ipadx = 0;
 		gbc.ipady = 0;
 		gbc.anchor = GridBagConstraints.PAGE_END;
@@ -69,10 +69,10 @@ public class GameFrame extends JFrame implements ActionListener{
 		buttons.add(new JButton("Flip - Vertical"));
 		buttons.add(new JButton("Save Game"));
 		buttons.forEach(b -> b.addActionListener(this));
-		buttons.forEach(b -> addButton(b, mainPane, gbc, BUTTON_START_POS, buttons.indexOf(b)));
+		buttons.forEach(b -> addButton(b, mainPane, gbc, BUTTON_START_POS, buttons.indexOf(b)+BOARD_WIDTH/2));
 		
 		add(mainPane);
-		setSize(1000,1000);
+		setSize(1920,1080);
 		setVisible(true);
 		
 	}
@@ -82,8 +82,13 @@ public class GameFrame extends JFrame implements ActionListener{
         gbc.gridy = gridy;
         gbc.gridwidth = 1;
         gbc.gridheight = 1;
-        gbc.weightx = 0.0;
-        gbc.weighty = 0.0;
+        gbc.weightx = 0.1;
+        gbc.weighty = 0.1;
+        gbc.insets = new  Insets(10,10,10,10);
+        gbc.ipadx = 0;
+        gbc.ipady = 10;
+        //gbc.anchor = GridBagConstraints.LINE_END;
+        gbc.fill = GridBagConstraints.BOTH;
         cont.add(obj, gbc);   
     }
     
@@ -106,13 +111,17 @@ public class GameFrame extends JFrame implements ActionListener{
 			System.out.println("Button: "+indx);
 			switch(indx) {
 				case 0: board.getSelectedPiece().rotate();
+						break;
 				case 1: board.getSelectedPiece().flipH();
+						break;
 				case 2: board.getSelectedPiece().flipV();
+						break;
 				case 3: try{currentGame.saveGame();
 						} catch (IOException e1) {
 							
 							e1.printStackTrace();
 						}
+						break;
 			}
 		}
 		else if(pieceButtons.contains(source)) {

@@ -39,7 +39,7 @@ public class Game implements Serializable{
 	}
 	
 	public Game() {
-		// For loading
+		currentPlayer = null;
 	}
 	
 	
@@ -81,7 +81,7 @@ public class Game implements Serializable{
 		Player prevPlayer = currentPlayer;
 		currentPlayer = players.get((players.indexOf(currentPlayer)+1)%players.size());
 		
-		while(!currentPlayer.hasPieces()||gameOver) {
+		while(!currentPlayer.hasPieces() && board.legalMovesRemain(currentPlayer) && !gameOver) {
 			currentPlayer = players.get((players.indexOf(currentPlayer)+1)%players.size());
 			if(currentPlayer.equals(prevPlayer)) {
 				gameOver = true;
