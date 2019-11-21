@@ -58,26 +58,32 @@ public class MainMenu implements ActionListener {
         else if(source == butLoadGame) {
         	//load board
         	//load players
-        	//game constructor with board and players
+        	//game constructor with board and players                	
 
-        	frame.setVisible(false);
+
 
         	System.out.println("Create Game");
 
         	Game test = new Game();
-        	try { 
-				test.loadGame();
-			} catch (ClassNotFoundException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-
-            //Once loaded, resume game
-        	test.loadBoard(); 
-
+        	
+        	if (test.saveExists()) {        		       		
+        		
+        		try { 
+    				test.loadGame();
+    			} catch (ClassNotFoundException e1) {
+    				// TODO Auto-generated catch block
+    				e1.printStackTrace();
+    			} catch (IOException e1) {
+    				// TODO Auto-generated catch block
+    				e1.printStackTrace();
+    			}
+                //Once loaded, resume game
+            	frame.setVisible(false);
+            	test.loadBoard(); 
+        	}
+        	else {
+        		JOptionPane.showMessageDialog(frame,"Sorry, no saves exist.");        		
+        	}
         }
     }
 }

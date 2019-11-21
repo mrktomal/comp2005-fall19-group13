@@ -8,6 +8,7 @@ public class Player implements Serializable{
 	private String colour;
 	private String name;
 	private int score;
+	private boolean active;
 
 	public Player(String colour, String name) {
 		
@@ -19,6 +20,8 @@ public class Player implements Serializable{
 		for (int p=0; p<21; p++) {
 			this.pieces.add(new Piece(p, colour));
 		}
+		
+		active = false;
 	}
 	
 	public void takeTurn(Piece p) {
@@ -43,11 +46,35 @@ public class Player implements Serializable{
 	}
 	
 	public void addScore() {
-		score = pieces.stream().mapToInt(p -> p.getSize()).sum();
+		score = pieces.stream().mapToInt(p -> p.getSize()*(-1)).sum();
+		if(!this.hasPieces()) {score += 15;}
+	}
+	
+	public void bonusPoints() {
+		score += 5;
 	}
 	
 	public ArrayList<Piece> getPieces() {
 		return pieces;
 	}
 	
+	public Piece getPiece(int ID) {
+		return pieces.stream().filter(pc -> pc.getID() == ID).findFirst().get();
+	}
+	
+	public int piecesRemaining() {
+		return pieces.size();
+	}
+	
+	public boolean hasPieces() {
+		return this.piecesRemaining() > 0;
+	}
+	
+	public boolean isActive() {
+		return active;
+	}
+	
+	public void setActive(boolean val) {
+		active = val;
+	}
 }

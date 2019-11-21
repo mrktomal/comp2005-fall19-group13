@@ -1,6 +1,7 @@
 import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -13,7 +14,7 @@ import java.util.Queue;
 import javax.swing.JButton;
 import javax.swing.*; //Get all of Swing
 
-public class Board extends JFrame implements ActionListener {
+public class Board extends JPanel implements ActionListener {
 	
 	protected class GridSquare extends JButton implements ActionListener{
 		
@@ -23,7 +24,7 @@ public class Board extends JFrame implements ActionListener {
 		protected int y; // y-coordinate
 		
 		public GridSquare(int newRow, int newCol) {
-			
+			super();
 			x = newRow;
 			y = newCol;
 			this.addActionListener(this);
@@ -112,57 +113,52 @@ public class Board extends JFrame implements ActionListener {
 		
 	}
 	
-	private JPanel gridPanel = new JPanel();
-	
 	private GridSquare [][] boardGrid;
 	private Piece selectedPiece;
+	private Game currentGame;
 	
 	private Queue<GridSquare> hoverQueue;
 	
 	private int row = 24;
 	private int col = 24;
 	
-	public Board() {
+	public Board(Game gm) {
 		// 2D array of board pieces	 
 		boardGrid = new GridSquare[row][col];
 		hoverQueue = new LinkedList<GridSquare>();
-		
-		//selectedPiece = new Piece(18, "#25BE00"); // For testing
-		
-		
+		currentGame = gm;
+		this.setPreferredSize(new Dimension(600,600));
 				
 		for (int i = 0; i < row; i++) { 
 			for (int j = 0; j < col; j++) { 
             	boardGrid[i][j] = new GridSquare(i, j);
             	boardGrid[i][j].addActionListener(this);
-            	gridPanel.add(boardGrid[i][j]);
+            	add(boardGrid[i][j]);
 	        }   
 		} 		 
 	}
 	
 	
 	public void drawBoard(boolean resume) {
-		 gridPanel.setLayout(new GridLayout(row, col));
-		 add(gridPanel);
-		 //setSize(1920/2, 1080/2);
-		 setSize(750,750);
-		 setDefaultCloseOperation( JFrame.DISPOSE_ON_CLOSE );
-		 setBounds();
-		 setVisible(true);
-		 
+		 setLayout(new GridLayout(row, col));
+		 setBounds(); 
 		 if(resume) {
 			 loadNewMouse();
 		 }
 	}
-	
+	//Colours: Color.decode(String)
+	//Blue: #167BFF
+	//Green: #25BE00
+	//Red: #BE0000
+	//Yellow: #F3DF13
 	private void setBounds() {
 		for (int i = 0; i < row; i++) { 
 			for (int j = 0; j < col; j++) { 
 		    	if(i==0||i==1||i==22||i==23||j==0||j==1||j==22||j==23) {
-		    		if(i==1 && j==1) {boardGrid[i][j].setActive("#167BFF");}
-		    		else if(i==1 && j==22) {boardGrid[i][j].setActive("#25BE00");}
-		    		else if(i==22 && j==22) {boardGrid[i][j].setActive("#BE0000");}
-		    		else if(i==22 && j==1) {boardGrid[i][j].setActive("#F3DF13");}
+		    		if(i==1 && j==1) {boardGrid[i][j].setActive("#F3DF13");}
+		    		else if(i==1 && j==22) {boardGrid[i][j].setActive("#BE0000");}
+		    		else if(i==22 && j==22) {boardGrid[i][j].setActive("#25BE00");}
+		    		else if(i==22 && j==1) {boardGrid[i][j].setActive("#167BFF");}
 		    		else {boardGrid[i][j].setActive("#3A352B");}
 		    	}
 			}
@@ -207,6 +203,7 @@ public class Board extends JFrame implements ActionListener {
 			for(Point c : selectedPiece.piecePath()) {
 				boardGrid[origin.x + (int)c.getX()][origin.y + (int)c.getY()].setActive();
 			}
+			currentGame.piecePlayed(selectedPiece);
 		}
 	}
 	
@@ -231,6 +228,33 @@ public class Board extends JFrame implements ActionListener {
 			allChecked = true;
 		}
 		return (valid && toCorner);
+	}
+	
+	public boolean legalMovesRemain(Player plr) {
+		boolean movesRemain = false;
+		for(GridSquare[] r : boardGrid) {
+			for(GridSquare c : r) {
+				for(Piece pc : plr.getPieces()){
+					for(int i=0; i<4; i++) {
+						movesRemain = legalMove(pc, c);
+						pc.rotate();
+					}
+					pc.flipH();
+					for(int i=0; i<4; i++) {
+						movesRemain = legalMove(pc, c);
+						pc.rotate();
+					}
+					pc.flipH();
+					pc.flipV();
+					for(int i=0; i<4; i++) {
+						movesRemain = legalMove(pc, c);
+						pc.rotate();
+					}
+					pc.flipV();
+				}
+			}
+		}
+		return movesRemain;
 	}
 	
 	private boolean squareAdjacent(GridSquare centre, String colour) {
@@ -263,6 +287,21 @@ public class Board extends JFrame implements ActionListener {
             	boardGrid[i][j].newMouse();
 	        }   
 		}
+	}
+	
+	@Override
+	public Dimension getPreferredSize() {
+		return new Dimension(900,900);
+	}
+	
+	@Override
+	public Dimension getMinimumSize() {
+		return new Dimension(250,250);
+	}
+	
+	@Override
+	public Dimension getMaximumSize() {
+		return new Dimension(1000,1000);
 	}
 	
 	public String toString() {
