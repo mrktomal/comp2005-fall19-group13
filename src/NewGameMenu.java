@@ -2,7 +2,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 
 public class NewGameMenu implements ActionListener{
     private JFrame frame;
@@ -81,17 +80,9 @@ public class NewGameMenu implements ActionListener{
         final Object source = e.getSource();
         if(source ==butStart); {
             frame.setVisible(false);
-            
-            Game test = new Game();
+            Game test = new Game(numOfPlayers, difficulty);
             test.startGame();
-            
-            try {
-				test.saveGame();
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
         }
-
+ 
     }
 }

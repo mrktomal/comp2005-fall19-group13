@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 
+
 public class MainMenu implements ActionListener {
     private JFrame frame;
     private JPanel panel;
@@ -50,38 +51,39 @@ public class MainMenu implements ActionListener {
         final Object source = e.getSource();
 
         if (source == butNewGame){
-        	System.out.println("clicked");
             NewGameMenu NMen = new NewGameMenu();
             NMen.init();
             frame.setVisible(false);
         }
-        
-        if(source == butLoadGame) {
+        else if(source == butLoadGame) {
         	//load board
         	//load players
-        	//game constructor with board and players
-        	
-        	frame.setVisible(false);
-        	
+        	//game constructor with board and players                	
+
+
+
         	System.out.println("Create Game");
-        	
+
         	Game test = new Game();
-        
-        	//before resuming, we must load the games state which includes the linked list of players, and board.
-            try { 
-				test.loadGame();
-			} catch (ClassNotFoundException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-            
-            //Once loaded, resume game
-        	test.resumeGame();           
-            
-			
+        	
+        	if (test.saveExists()) {        		       		
+        		
+        		try { 
+    				test.loadGame();
+    			} catch (ClassNotFoundException e1) {
+    				// TODO Auto-generated catch block
+    				e1.printStackTrace();
+    			} catch (IOException e1) {
+    				// TODO Auto-generated catch block
+    				e1.printStackTrace();
+    			}
+                //Once loaded, resume game
+            	frame.setVisible(false);
+            	test.loadBoard(); 
+        	}
+        	else {
+        		JOptionPane.showMessageDialog(frame,"Sorry, no saves exist.");        		
+        	}
         }
     }
 }
