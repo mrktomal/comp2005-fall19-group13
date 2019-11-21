@@ -67,29 +67,29 @@ public class Game implements Serializable{
 	}
 	
 	public void piecePlayed(Piece currPiece) {
-		currentPlayer.setActive(false);
 		currentPlayer.getPieces().removeIf(pc -> pc.getID()==currPiece.getID());
 		if(currPiece.getID()==0 && !currentPlayer.hasPieces()) {currentPlayer.bonusPoints();}
 		nextPlayer();
-		board.setSelectedPiece(currentPlayer.getPieces().get(0));
-		currentPlayer.setActive(false);
 		window.drawPieceBench();
 	}
 	
 	public void nextPlayer() {
 		boolean gameOver = false;
+		currentPlayer.setActive(false);
 		Player prevPlayer = currentPlayer;
 		currentPlayer = players.get((players.indexOf(currentPlayer)+1)%players.size());
-		
-		while(!currentPlayer.hasPieces() && board.legalMovesRemain(currentPlayer) && !gameOver) {
-			currentPlayer = players.get((players.indexOf(currentPlayer)+1)%players.size());
-			if(currentPlayer.equals(prevPlayer)) {
-				gameOver = true;
-			}
-		}
+//		while((!currentPlayer.hasPieces() || !board.legalMovesRemain(currentPlayer)) && !gameOver) {
+//			currentPlayer = players.get((players.indexOf(currentPlayer)+1)%players.size());
+//			if(currentPlayer.equals(prevPlayer)) {
+//				gameOver = true;
+//			}
+//		}
+		board.setSelectedPiece(currentPlayer.getPieces().get(0));
+		currentPlayer.setActive(true);
 		if(gameOver) {
 			this.endGame();
 		}
+		
 	}
 	
 	public void saveGame() throws IOException{
@@ -121,7 +121,9 @@ public class Game implements Serializable{
 		players = (ArrayList<Player>) playersObjectInStream.readObject();
 		playersObjectInStream.close();
 		
-		currentPlayer = players.stream().filter(pl -> pl.isActive()).findFirst().get();
+		Player ActivePlayer = players.stream().filter(pl -> pl.isActive()).findFirst().get();
+		
+		currentPlayer = ActivePlayer;
 		
 		window = new GameFrame(board, players, this);
 

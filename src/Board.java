@@ -2,12 +2,14 @@ import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.stream.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -62,10 +64,7 @@ public class Board extends JPanel implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			if (!this.active && Board.this.pieceSelected()) {
 				Board.this.placePiece(GridSquare.this);
-				System.out.println("Square Selected: ("+x+" , "+y+")");
-				System.out.println("Path:");
 				Board.this.selectedPiece.piecePath().stream().forEach(point -> System.out.println(point.toString()));
-				System.out.println();
 			}
 		}
 		
@@ -93,6 +92,12 @@ public class Board extends JPanel implements ActionListener {
 		public void setHover() {
 			if (!this.active) {
 				this.setBackground(Color.decode(Board.this.selectedPiece.getColour()));
+			}
+		}
+		
+		public void setHover(String cl) {
+			if (!this.active) {
+				this.setBackground(Color.decode(cl));
 			}
 		}
 		
@@ -127,7 +132,7 @@ public class Board extends JPanel implements ActionListener {
 		boardGrid = new GridSquare[row][col];
 		hoverQueue = new LinkedList<GridSquare>();
 		currentGame = gm;
-		this.setPreferredSize(new Dimension(600,600));
+		this.setPreferredSize(new Dimension(900,900));
 				
 		for (int i = 0; i < row; i++) { 
 			for (int j = 0; j < col; j++) { 
@@ -159,7 +164,8 @@ public class Board extends JPanel implements ActionListener {
 		    		else if(i==1 && j==22) {boardGrid[i][j].setActive("#BE0000");}
 		    		else if(i==22 && j==22) {boardGrid[i][j].setActive("#25BE00");}
 		    		else if(i==22 && j==1) {boardGrid[i][j].setActive("#167BFF");}
-		    		else {boardGrid[i][j].setActive("#3A352B");}
+		    		else {boardGrid[i][j].setActive("#3A352B");
+		    				boardGrid[i][j].setBorderPainted(false);}
 		    	}
 			}
     	}
@@ -174,6 +180,20 @@ public class Board extends JPanel implements ActionListener {
 				if(!square.active) {
 					hoverQueue.add(square);
 					square.setHover();		
+				}
+			}
+		}
+	}
+	
+	public void hover(GridSquare origin, Piece p, String cl) {
+		int xCoor = origin.x;
+		int yCoor = origin.y;
+		for(Point c : p.piecePath()) {
+			if(xCoor+c.getX() >= 0 && xCoor+c.getX() < row && yCoor+c.getY() >= 0 && yCoor+c.getY() < row) {
+				GridSquare square = boardGrid[(int)c.getX()+xCoor][(int)c.getY()+yCoor];
+				if(!square.active) {
+					hoverQueue.add(square);
+					square.setHover(cl);		
 				}
 			}
 		}
@@ -213,17 +233,24 @@ public class Board extends JPanel implements ActionListener {
 		boolean valid = true;
 		boolean allChecked = false;
 		boolean toCorner = false;
+		int xCoor;
+		int yCoor;
 		// Check conditions for each square in Piece
 		if(!pieceSelected()) {return false;} // Bail if there's no piece selected
 		while(valid && !allChecked) {
 			for(Point c : p.piecePath()) {
 				// Check if there are any adjacent active squares - Not valid if there are
-				if(boardGrid[(int) (origin.x+c.getX())][(int) (origin.y+c.getY())].active) {valid=false;}
-				if(this.squareAdjacent(boardGrid[(int) (origin.x+c.getX())][(int) (origin.y+c.getY())], p.getColour())) {valid=false;}
-				// Check that there is an active piece touching a corner - Needs to be at least one			
-				if(!toCorner) {
-					if(this.touchingCorner(boardGrid[(int) (origin.x+c.getX())][(int) (origin.y+c.getY())], p.getColour())) {toCorner = true;}
+				xCoor = (int) (origin.x+c.getX());
+				yCoor = (int) (origin.y+c.getY());
+				if(xCoor > 0 && xCoor < row && yCoor > 0 && yCoor<col) {
+					if(boardGrid[xCoor][yCoor].active) {valid=false;}
+					if(this.squareAdjacent(boardGrid[xCoor][yCoor], p.getColour())) {valid=false;}
+					// Check that there is an active piece touching a corner - Needs to be at least one			
+					if(!toCorner) {
+						if(this.touchingCorner(boardGrid[xCoor][yCoor], p.getColour())) {toCorner = true;}
+					}
 				}
+				else {valid = false;}
 			}
 			allChecked = true;
 		}
@@ -257,20 +284,81 @@ public class Board extends JPanel implements ActionListener {
 		return movesRemain;
 	}
 	
+	public boolean showHint(Piece p) {
+		boolean squareFound = false;
+		boolean allChecked = false;
+		GridSquare sq;
+		while(!squareFound&&!allChecked) {
+			for(int r = 2; r<row-2;r++) {
+				for(int c = 2; c<col-2;c++) {
+					sq = boardGrid[r][c];
+					if(legalMove(p,sq) && !squareFound) {
+						hover(sq,p,"#BB8FCE");
+						squareFound = true;
+					}
+				}
+			}
+			allChecked = true;
+		}
+		return squareFound;
+	}
+	
+	public void getHint() {
+		boolean found = false;
+		ArrayList<Piece> copy = new ArrayList<Piece>(currentGame.getCurrentPlayer().getPieces());
+		int indx = copy.size()-1;
+		int i = 0;
+		Piece curPiece;
+		while(!found && indx >= 0) {
+			curPiece = copy.get(indx);
+			while(!found && i<4) {
+				found = showHint(curPiece);
+				curPiece.rotate();
+				i++;
+			}
+			i=0;
+			curPiece.flipH();
+			while(!found && i<4){
+				found = showHint(curPiece);
+				curPiece.rotate();
+				i++;
+			}
+			i=0;
+			curPiece.flipH();
+			curPiece.flipV();
+			while(!found && i<4){
+				found = showHint(curPiece);
+				curPiece.rotate();
+				i++;
+			}
+			indx -=1;
+		}
+	}
+	
 	private boolean squareAdjacent(GridSquare centre, String colour) {
-		if(boardGrid[centre.x+1][centre.y].active && boardGrid[centre.x+1][centre.y].colour.equals(colour)) {return true;}
-		else if(boardGrid[centre.x][centre.y+1].active && boardGrid[centre.x][centre.y+1].colour.equals(colour)) {return true;}
-		else if(boardGrid[centre.x-1][centre.y].active && boardGrid[centre.x-1][centre.y].colour.equals(colour)) {return true;}
-		else if(boardGrid[centre.x][centre.y-1].active && boardGrid[centre.x][centre.y-1].colour.equals(colour)) {return true;}
-		return false;
+		try {
+			if(boardGrid[centre.x+1][centre.y].active && boardGrid[centre.x+1][centre.y].colour.equals(colour)) {return true;}
+			else if(boardGrid[centre.x][centre.y+1].active && boardGrid[centre.x][centre.y+1].colour.equals(colour)) {return true;}
+			else if(boardGrid[centre.x-1][centre.y].active && boardGrid[centre.x-1][centre.y].colour.equals(colour)) {return true;}
+			else if(boardGrid[centre.x][centre.y-1].active && boardGrid[centre.x][centre.y-1].colour.equals(colour)) {return true;}
+			return false;
+		}
+		catch (ArrayIndexOutOfBoundsException e){
+			return false;
+		}
 	}
 	
 	private boolean touchingCorner(GridSquare centre, String colour) {
-		if(boardGrid[centre.x+1][centre.y+1].active && boardGrid[centre.x+1][centre.y+1].colour.equals(colour)) {return true;}
-		else if(boardGrid[centre.x+1][centre.y-1].active && boardGrid[centre.x+1][centre.y-1].colour.equals(colour)) {return true;}
-		else if(boardGrid[centre.x-1][centre.y-1].active && boardGrid[centre.x-1][centre.y-1].colour.equals(colour)) {return true;}
-		else if(boardGrid[centre.x-1][centre.y+1].active && boardGrid[centre.x-1][centre.y+1].colour.equals(colour)) {return true;}
-		return false;
+		try {
+			if(boardGrid[centre.x+1][centre.y+1].active && boardGrid[centre.x+1][centre.y+1].colour.equals(colour)) {return true;}
+			else if(boardGrid[centre.x+1][centre.y-1].active && boardGrid[centre.x+1][centre.y-1].colour.equals(colour)) {return true;}
+			else if(boardGrid[centre.x-1][centre.y-1].active && boardGrid[centre.x-1][centre.y-1].colour.equals(colour)) {return true;}
+			else if(boardGrid[centre.x-1][centre.y+1].active && boardGrid[centre.x-1][centre.y+1].colour.equals(colour)) {return true;}
+			return false;
+		}
+		catch(ArrayIndexOutOfBoundsException e) {
+			return false;
+		}
 	}
 	
 	public GridSquare[][] getBoard() {
@@ -289,14 +377,25 @@ public class Board extends JPanel implements ActionListener {
 		}
 	}
 	
-	@Override
-	public Dimension getPreferredSize() {
-		return new Dimension(900,900);
-	}
+
+    @Override
+    public Dimension getPreferredSize() {
+        Dimension d = super.getPreferredSize();
+        Container c = getParent();
+        if (c != null) {
+            d = c.getSize();
+        } else {
+            return new Dimension(10, 10);
+        }
+        int w = (int) d.getWidth();
+        int h = (int) d.getHeight();
+        int s = (w < h ? w : h);
+        return new Dimension(s, s);
+    }
 	
 	@Override
 	public Dimension getMinimumSize() {
-		return new Dimension(250,250);
+		return new Dimension(500,500);
 	}
 	
 	@Override

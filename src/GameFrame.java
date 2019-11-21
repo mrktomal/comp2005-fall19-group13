@@ -1,4 +1,6 @@
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -9,88 +11,65 @@ public class GameFrame extends JFrame implements ActionListener{
 	
 	private Board board;
 	private JPanel mainPane;
+	private JPanel boardContainer;
 	private Game currentGame;
+	private JPanel buttonDisplay;
 	private ArrayList<JButton> buttons;
 	private JPanel pieceDisplay;
 	private ArrayList<PButton> pieceButtons;
 	
-	private int BOARD_POS = 0;
-	private int BOARD_WIDTH = 24;
-	private int BUTTON_START_POS = BOARD_WIDTH+1;
-	private int PIECEDISPLAY_POS = BOARD_WIDTH+1;
 
 	public GameFrame(Board brd, ArrayList<Player> players, Game gm) {
 		super("Blokus!");
 		board = brd;
 		currentGame = gm;
 		
-		GridBagLayout layout = new GridBagLayout();
-		GridBagConstraints gbc = new GridBagConstraints();
-		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		mainPane = new JPanel();
-		mainPane.setLayout(layout);
+		mainPane.setLayout(new BorderLayout());
 		
 		//add Board
-		//gbc.gridx = BOARD_POS;
-		//gbc.gridy = BOARD_POS;
-		gbc.gridheight = BOARD_WIDTH;
-		gbc.gridwidth = BOARD_WIDTH;
-		gbc.weightx = 1.0;
-		gbc.weighty = 1.0;
-		gbc.insets = new Insets(10,10,10,10);
-		gbc.anchor = GridBagConstraints.CENTER;
-		gbc.fill = GridBagConstraints.NONE;
-		mainPane.add(board, gbc);
+		boardContainer = new JPanel();
+		GridBagLayout boardLayout = new GridBagLayout();
+		GridBagConstraints gbc = new GridBagConstraints();
+		boardContainer.setLayout(boardLayout);
+		boardContainer.add(board, gbc);
+		mainPane.add(boardContainer, BorderLayout.CENTER);
 		
 		//Piece Bench
 		pieceDisplay = new JPanel();
-		pieceDisplay.setLayout(new FlowLayout());
+		pieceDisplay.setLayout(new FlowLayout(FlowLayout.CENTER,1,1));
+		//pieceDisplay.setBorder(new EmptyBorder(10,10,10,10));
+		pieceDisplay.setPreferredSize(new Dimension(1000,200));
+		pieceDisplay.setOpaque(false);
 		pieceButtons = new ArrayList<PButton>(21);
-		gbc.gridx = BOARD_POS; // In line with board.
-		gbc.gridy = PIECEDISPLAY_POS;
-		gbc.gridwidth = BOARD_WIDTH;
-		gbc.gridheight = 1;
-		gbc.weightx = 0.2;
-		gbc.weighty = 0.2;
-		gbc.ipadx = 0;
-		gbc.ipady = 0;
-		gbc.anchor = GridBagConstraints.PAGE_END;
-		gbc.fill = GridBagConstraints.VERTICAL;
-		mainPane.add(pieceDisplay, gbc);
+
+		mainPane.add(pieceDisplay, BorderLayout.PAGE_END);
 		drawPieceBench();
 		
 		
 		//Buttons
 		buttons = new ArrayList<JButton>();
+		buttonDisplay = new JPanel();
+		buttonDisplay.setLayout(new FlowLayout(FlowLayout.CENTER));
+		buttonDisplay.setPreferredSize(new Dimension(800,50));
 		buttons.add(new JButton("Rotate"));
 		buttons.add(new JButton("Flip - Horizontal"));
 		buttons.add(new JButton("Flip - Vertical"));
+		buttons.add(new JButton("Get Hint"));
 		buttons.add(new JButton("Save Game"));
 		buttons.forEach(b -> b.addActionListener(this));
-		buttons.forEach(b -> addButton(b, mainPane, gbc, BUTTON_START_POS, buttons.indexOf(b)+BOARD_WIDTH/2));
+		buttons.forEach(b -> buttonDisplay.add(b));
+		mainPane.add(buttonDisplay, BorderLayout.PAGE_START);
 		
 		add(mainPane);
-		setSize(1920,1080);
+		setSize(1200,1000);
+		setLocationRelativeTo(null);
 		setVisible(true);
 		
 	}
-	
-    public void addButton(Component obj, Container cont, GridBagConstraints gbc, int gridx, int gridy){
-        gbc.gridx = gridx;
-        gbc.gridy = gridy;
-        gbc.gridwidth = 1;
-        gbc.gridheight = 1;
-        gbc.weightx = 0.1;
-        gbc.weighty = 0.1;
-        gbc.insets = new  Insets(10,10,10,10);
-        gbc.ipadx = 0;
-        gbc.ipady = 10;
-        //gbc.anchor = GridBagConstraints.LINE_END;
-        gbc.fill = GridBagConstraints.BOTH;
-        cont.add(obj, gbc);   
-    }
+	 
     
     public void drawPieceBench() {
     	pieceDisplay.setVisible(false);
@@ -116,7 +95,9 @@ public class GameFrame extends JFrame implements ActionListener{
 						break;
 				case 2: board.getSelectedPiece().flipV();
 						break;
-				case 3: try{currentGame.saveGame();
+				case 3: board.getHint();
+						break;
+				case 4: try{currentGame.saveGame();
 						} catch (IOException e1) {
 							
 							e1.printStackTrace();
@@ -141,7 +122,33 @@ public class GameFrame extends JFrame implements ActionListener{
 		public PButton(Piece p) {
 			super();
 			ID = p.getID();
-			this.setText(Integer.toString(ID));;
+			String text = Integer.toString(ID);
+			String colour = p.getColour();
+			
+			this.setMaximumSize(new Dimension(100,100));
+			this.setMinimumSize(new Dimension(20,20));
+			
+			ImageIcon icon = null;
+			
+			switch(colour) {
+			case "#167BFF": 
+				icon = new ImageIcon("src/Piece_Images/"+Integer.toString(ID+1)+"_B.png", text); break;
+			case "#25BE00": 
+				icon = new ImageIcon("src/Piece_Images/"+Integer.toString(ID+1)+"_G.png", text); break;
+			case "#BE0000": 
+				icon = new ImageIcon("src/Piece_Images/"+Integer.toString(ID+1)+"_R.png", text); break;
+			case "#F3DF13": 
+				icon = new ImageIcon("src/Piece_Images/"+Integer.toString(ID+1)+"_Y.png", text); break;
+			default: break;
+			}
+			Image img = icon.getImage() ;    
+			icon = new ImageIcon(img);
+			
+			this.setBorderPainted(false);
+			this.setOpaque(false);
+			this.setContentAreaFilled(false);
+			this.setIcon(icon);
+			
 		}
 		
 		public PButton(int ID) {
