@@ -64,9 +64,9 @@ public class MainMenu implements ActionListener {
 
         	System.out.println("Create Game");
 
-        	Game test = new Game();
+        	Game loaded = new Game();
         	try { 
-				test.loadGame();
+        		loaded.loadGame();
 			} catch (ClassNotFoundException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -76,7 +76,7 @@ public class MainMenu implements ActionListener {
 			}
 
             //Once loaded, resume game
-        	test.loadBoard(); 
+        	loaded.loadBoard(); 
 
         }
     }
