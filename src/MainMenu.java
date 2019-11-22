@@ -65,15 +65,20 @@ public class MainMenu implements ActionListener {
         	System.out.println("Create Game");
 
         	Game loaded = new Game();
-        	try { 
-        		loaded.loadGame();
-			} catch (ClassNotFoundException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
+        	if(loaded.saveExists()) {
+	        	try { 
+	        		loaded.loadGame();
+				} catch (ClassNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+        	}
+        	else {
+        		JOptionPane.showMessageDialog(frame,"Sorry, no saves exist.");   
+        	}
 
             //Once loaded, resume game
         	loaded.loadBoard(); 

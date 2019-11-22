@@ -8,6 +8,8 @@ class Piece_Test {
 
 	@BeforeAll
 	static void setUpBeforeClass() throws Exception {
+		Piece test = new Piece(10, "#BE0000");
+		System.out.println(test);
 	}
 
 	@AfterAll
@@ -16,34 +18,35 @@ class Piece_Test {
 	
 
 	@Test
-	void testPiece() {
-		fail("Not yet implemented");
-	}
-
-	@Test
 	void testRotate() {
-		
-		fail("Not yet implemented");
+		Piece test = new Piece(10, "#BE0000");
+		System.out.println("Rotating...");
+		test.rotate();
+		System.out.println(test);
 	}
 
 	@Test
 	void testFlipV() {
-		fail("Not yet implemented");
+		Piece test = new Piece(10, "#BE0000");
+		System.out.println("Flipping...");
+		test.flipV();
+		System.out.println(test);
 	}
 
 	@Test
 	void testFlipH() {
-		fail("Not yet implemented");
+		Piece test = new Piece(10, "#BE0000");
+		System.out.println("Flipping...");
+		test.flipH();
+		System.out.println(test);
 	}
 
 	@Test
 	void testPiecePath() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	void testToString() {
-		fail("Not yet implemented");
+		Piece test = new Piece(10, "#BE0000");
+		System.out.println("Getting path...");
+		System.out.println(test.piecePath());
+		System.out.println();
 	}
 
 }

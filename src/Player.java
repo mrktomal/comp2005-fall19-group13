@@ -8,13 +8,15 @@ public class Player implements Serializable{
 	private String colour;
 	private String name;
 	private int score;
+	private boolean bot;
 	private boolean active;
 
-	public Player(String colour, String name) {
+	public Player(String colour, String name, boolean isBot) {
 		
 		this.score = 0;
 		this.colour = colour;
 		this.name = name;
+		this.bot = isBot;
 		this.pieces = new ArrayList<Piece>(21);
 		
 		for (int p=0; p<21; p++) {
@@ -76,5 +78,9 @@ public class Player implements Serializable{
 	
 	public void setActive(boolean val) {
 		active = val;
+	}
+	
+	public boolean isBot() {
+		return bot;
 	}
 }

@@ -19,13 +19,14 @@ public class NewGameMenu implements ActionListener{
     	
     	numOfPlayers = 4;
     	difficulty = 0;
+    	hint = true;
     	
         frame = new JFrame("Blokus The Game!");
         frame.setResizable(true);
         panel = new JPanel();
         label = new JLabel("New Game");
-        label2 = new JLabel("Players");
-        label3 = new JLabel("Difficulty");
+        label2 = new JLabel("Players:");
+        label3 = new JLabel("Difficulty:");
         label4 = new JLabel("Settings");
         butStart = new JButton("Start");
         btwoPlayer = new JButton("2-Player");
@@ -34,8 +35,8 @@ public class NewGameMenu implements ActionListener{
         bEasy = new JButton("Easy");
         bMedium = new JButton("Medium");
         bHard = new JButton("Hard");
-        bHinttog = new JButton("Hint: On");
-        bVisAidtog = new JButton("Hint: Off");
+        bHinttog = new JButton("Hints: On");
+        bVisAidtog = new JButton("Hints: Off");
 
     }
 
@@ -72,16 +73,56 @@ public class NewGameMenu implements ActionListener{
         bVisAidtog.setBounds(700, 350, 100, 60);
         
         butStart.addActionListener(this);
-        
+        btwoPlayer.addActionListener(this);
+        bthreePlayer.addActionListener(this);
+        bfourPlayer.addActionListener(this);
+        bEasy.addActionListener(this);
+        bMedium.addActionListener(this);
+        bHard.addActionListener(this);
+        bHinttog.addActionListener(this);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         final Object source = e.getSource();
-        if(source ==butStart); {
+        if(source ==butStart) {
             frame.setVisible(false);
-            Game test = new Game(numOfPlayers, difficulty);
+            Game test = new Game(numOfPlayers, difficulty, hint);
             test.startGame();
+        }
+        else if(source ==btwoPlayer) {
+        	numOfPlayers = 2;
+        	label2.setText("Players: 2");
+        }
+        else if(source == bthreePlayer) {
+        	numOfPlayers = 3;
+        	label2.setText("Players: 3");
+        }
+        else if(source == bfourPlayer) {
+        	numOfPlayers = 4;
+        	label2.setText("Players: 4");
+        }
+        else if(source == bEasy) {
+        	difficulty = 1;
+        	label3.setText("Difficulty: Easy");
+        }
+        else if(source == bMedium) {
+        	difficulty = 2;
+        	label3.setText("Difficulty: Medium");
+        }
+        else if(source == bHard) {
+        	difficulty = 3;
+        	label3.setText("Difficulty: Hard");
+        }
+        else if(source == bHinttog) {
+        	if (bHinttog.getText().contentEquals("Hints: On")){
+        		hint = false;
+        		bHinttog.setText("Hints: Off");
+        	}
+        	else {
+        		hint = true;
+        		bHinttog.setText("Hints: On");
+        	}
         }
  
     }

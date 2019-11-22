@@ -37,7 +37,6 @@ public class Board extends JPanel implements ActionListener {
 	            	if (Board.this.pieceSelected()) {
 	            		Board.this.hover(GridSquare.this);
 	            	}
-	            	//System.out.println(GridSquare.this.toString());
 	            }
 	            
 	            public void mouseExited(MouseEvent me) {
@@ -259,22 +258,31 @@ public class Board extends JPanel implements ActionListener {
 	
 	public boolean legalMovesRemain(Player plr) {
 		boolean movesRemain = false;
-		for(GridSquare[] r : boardGrid) {
-			for(GridSquare c : r) {
+		for(int r = 2; r<row-2; r++) {
+			for(int c = 2; c<col-2; c++) {
 				for(Piece pc : plr.getPieces()){
 					for(int i=0; i<4; i++) {
-						movesRemain = legalMove(pc, c);
+						movesRemain = legalMove(pc, boardGrid[r][c]);
+						if(movesRemain) {
+							return true;
+						}
 						pc.rotate();
 					}
 					pc.flipH();
 					for(int i=0; i<4; i++) {
-						movesRemain = legalMove(pc, c);
+						movesRemain = legalMove(pc, boardGrid[r][c]);
+						if(movesRemain) {
+							return true;
+						}
 						pc.rotate();
 					}
 					pc.flipH();
 					pc.flipV();
 					for(int i=0; i<4; i++) {
-						movesRemain = legalMove(pc, c);
+						movesRemain = legalMove(pc, boardGrid[r][c]);
+						if(movesRemain) {
+							return true;
+						}
 						pc.rotate();
 					}
 					pc.flipV();

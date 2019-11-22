@@ -17,12 +17,14 @@ public class GameFrame extends JFrame implements ActionListener{
 	private ArrayList<JButton> buttons;
 	private JPanel pieceDisplay;
 	private ArrayList<PButton> pieceButtons;
+	private boolean hint;
 	
 
-	public GameFrame(Board brd, ArrayList<Player> players, Game gm) {
+	public GameFrame(Board brd, ArrayList<Player> players, Game gm, boolean h) {
 		super("Blokus!");
 		board = brd;
 		currentGame = gm;
+		hint = h;
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
@@ -57,8 +59,9 @@ public class GameFrame extends JFrame implements ActionListener{
 		buttons.add(new JButton("Rotate"));
 		buttons.add(new JButton("Flip - Horizontal"));
 		buttons.add(new JButton("Flip - Vertical"));
-		buttons.add(new JButton("Get Hint"));
 		buttons.add(new JButton("Save Game"));
+		buttons.add(new JButton("End Game"));
+		if(hint) {buttons.add(new JButton("Get Hint"));}
 		buttons.forEach(b -> b.addActionListener(this));
 		buttons.forEach(b -> buttonDisplay.add(b));
 		mainPane.add(buttonDisplay, BorderLayout.PAGE_START);
@@ -95,14 +98,16 @@ public class GameFrame extends JFrame implements ActionListener{
 						break;
 				case 2: board.getSelectedPiece().flipV();
 						break;
-				case 3: board.getHint();
-						break;
-				case 4: try{currentGame.saveGame();
+				case 3: try{currentGame.saveGame();
 						} catch (IOException e1) {
 							
 							e1.printStackTrace();
 						}
 						break;
+				case 4: currentGame.endGame();
+				break;
+				case 5: board.getHint();
+				break;
 			}
 		}
 		else if(pieceButtons.contains(source)) {

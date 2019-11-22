@@ -36,12 +36,16 @@ class BoardTest {
 
 	@Test
 	void testLegalMove() {
-		fail("Not yet implemented");
+
 	}
 
 	@Test
 	void testLegalMovesRemain() {
-		fail("Not yet implemented");
+		Game testGame = new Game(4,1,false);
+		Board testBoard = new Board(testGame);
+		Player testPlayer = new Player("#167BFF", "Player1", false);
+		assertTrue(testBoard.legalMovesRemain(testPlayer));
+		//fail("Not yet implemented");
 	}
 
 	@Test
