@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Queue;
 import javax.swing.JButton;
+import java.awt.Insets;
 import javax.swing.*; //Get all of Swing
 
 public class Board extends JPanel implements ActionListener {
@@ -91,6 +92,18 @@ public class Board extends JPanel implements ActionListener {
 		public void setHover() {
 			if (!this.active) {
 				this.setBackground(Color.decode(Board.this.selectedPiece.getColour()));
+				String c = Board.this.selectedPiece.getColour();
+				this.setMargin(new Insets(0,0,0,0));
+				if(c == "#167BFF") {
+					this.setText("B");
+				}else if(c == "#F3DF13") {
+					this.setText("Y");
+				}else if(c == "#BE0000") {
+					this.setText("R");
+				}else if(c == "#25BE00") {
+					this.setText("G");
+				}
+				
 			}
 		}
 		
@@ -103,6 +116,7 @@ public class Board extends JPanel implements ActionListener {
 		public void setUnHover() {
 			if (!this.active) {
 				this.setBackground(null);
+				this.setText("");
 			}
 		}
 		
